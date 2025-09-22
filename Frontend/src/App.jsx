@@ -10,6 +10,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { NavbarMinimal } from "./components/NavbarMinimal/NavbarMinimal.jsx";
 import { HeaderSimple } from "./components/HeaderSimple/HeaderSimple.jsx";
+import { TableSort } from "./components/TableSort/TableSort.jsx";
 
 export default function App() {
   const [message, setMessage] = useState("");
@@ -37,7 +38,7 @@ export default function App() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <h1>Main Content</h1>
+        <TableSort />
         {message && <p>API Message: {message}</p>}
       </AppShell.Main>
     </AppShell>
