@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://localhost:3000", // Forward /api calls to backend
+      "/api": "http://localhost:8000", // Forward /api calls to backend
     },
   },
 });

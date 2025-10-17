@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconChevronDown,
   IconChevronUp,
@@ -16,6 +16,8 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import classes from "./TableSort.module.css";
+
+import { useNavigate } from "react-router-dom";
 
 function Th({ children, reversed, sorted, onSort }) {
   const Icon = sorted
@@ -41,8 +43,11 @@ function Th({ children, reversed, sorted, onSort }) {
 
 function filterData(data, search) {
   const query = search.toLowerCase().trim();
+  if (!data || data.length === 0) return [];
   return data.filter((item) =>
-    keys(data[0]).some((key) => item[key].toLowerCase().includes(query))
+    keys(data[0]).some(
+      (key) => item[key] && item[key].toString().toLowerCase().includes(query)
+    )
   );
 }
 
@@ -55,11 +60,14 @@ function sortData(data, payload) {
 
   return filterData(
     [...data].sort((a, b) => {
+      const aVal = a[sortBy] ? a[sortBy].toString() : "";
+      const bVal = b[sortBy] ? b[sortBy].toString() : "";
+
       if (payload.reversed) {
-        return b[sortBy].localeCompare(a[sortBy]);
+        return bVal.localeCompare(aVal);
       }
 
-      return a[sortBy].localeCompare(b[sortBy]);
+      return aVal.localeCompare(bVal);
     }),
     payload.search
   );
@@ -148,11 +156,18 @@ const data = [
   },
 ];
 
-export function TableSort() {
+export function TableSort({ data = [] }) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
+
+  // Update when data changes from parent
+  useEffect(() => {
+    setSortedData(data);
+  }, [JSON.stringify(data)]);
+
+  const navigate = useNavigate();
 
   const setSorting = (field) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -169,10 +184,19 @@ export function TableSort() {
     );
   };
 
+  const handleCourseCodeClick = (course) => {
+    navigate(`/courses/${encodeURIComponent(course.code)}`);
+  };
+
   const rows = sortedData.map((row) => (
-    <Table.Tr key={row.name}>
+    <Table.Tr key={row.code}>
+      <Table.Td
+        onClick={() => handleCourseCodeClick(row)}
+        style={{ cursor: "pointer" }}
+      >
+        {row.code}
+      </Table.Td>
       <Table.Td>{row.name}</Table.Td>
-      <Table.Td>{row.email}</Table.Td>
       <Table.Td>{row.company}</Table.Td>
     </Table.Tr>
   ));
@@ -192,21 +216,21 @@ export function TableSort() {
         miw={700}
         layout="fixed"
       >
-        <Table.Tbody>
+        <Table.Thead>
           <Table.Tr>
+            <Th
+              sorted={sortBy === "code"}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting("code")}
+            >
+              Coursecode
+            </Th>
             <Th
               sorted={sortBy === "name"}
               reversed={reverseSortDirection}
               onSort={() => setSorting("name")}
             >
-              Course
-            </Th>
-            <Th
-              sorted={sortBy === "email"}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting("email")}
-            >
-              Professor
+              Title
             </Th>
             <Th
               sorted={sortBy === "company"}
@@ -216,13 +240,15 @@ export function TableSort() {
               Rating
             </Th>
           </Table.Tr>
-        </Table.Tbody>
+        </Table.Thead>
         <Table.Tbody>
           {rows.length > 0 ? (
             rows
           ) : (
             <Table.Tr>
-              <Table.Td colSpan={Object.keys(data[0]).length}>
+              <Table.Td
+                colSpan={data.length > 0 ? Object.keys(data[0]).length : 3}
+              >
                 <Text fw={500} ta="center">
                   Nothing found
                 </Text>

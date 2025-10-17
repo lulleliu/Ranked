@@ -9,16 +9,14 @@ import { AppShell, Burger } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 
-import { NavbarMinimal } from "./components/NavbarMinimal/NavbarMinimal.jsx";
-import { HeaderSimple } from "./components/HeaderSimple/HeaderSimple.jsx";
-import { TableSort } from "./components/TableSort/TableSort.jsx";
-import LoginForm from "./components/LoginForm.jsx";
-import { CoursePage } from "./pages/coursePage.jsx";
-import HomePage from "./pages/HomePage.jsx";
+import { NavbarMinimal } from "../components/NavbarMinimal/NavbarMinimal.jsx";
+import { HeaderSimple } from "../components/HeaderSimple/HeaderSimple.jsx";
+import { TableSort } from "../components/TableSort/TableSort.jsx";
+import LoginForm from "../components/LoginForm.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-export default function App() {
+export default function HomePage() {
   const [message, setMessage] = useState("");
   const [opened, { toggle }] = useDisclosure();
   const [courses, setCourses] = useState([]);
@@ -42,19 +40,27 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    fetch("/api/hello")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error("Error fetching API:", err));
-  }, []);
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/courses/:courseCode" element={<CoursePage />} />
-        <Route path="/" element={<HomePage />} />
-      </Routes>
-    </Router>
+    <AppShell
+      header={{ height: 56 }}
+      navbar={{ width: 80, breakpoint: "sm" }}
+      padding="md"
+    >
+      {/* 
+      <AppShell.Header>
+        <HeaderSimple />
+      </AppShell.Header>
+
+      <AppShell.Navbar>
+        <NavbarMinimal />
+      </AppShell.Navbar>
+      */}
+
+      <AppShell.Main>
+        <LoginForm onLogin={handleLogin} />
+
+        <TableSort data={courses} />
+      </AppShell.Main>
+    </AppShell>
   );
 }
