@@ -1,6 +1,7 @@
-import { CoursePage } from "./pages/coursePage.jsx";
+import CoursePage from "./pages/CoursePage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import { MantineProvider } from "@mantine/core";

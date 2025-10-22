@@ -13,7 +13,7 @@ import { CommentSimple } from "../components/CommentSimple";
 import moment from "moment";
 import tz from "moment-timezone";
 
-export function CoursePage() {
+export default function CoursePage() {
   const { courseCode } = useParams();
   const [course, setCourse] = useState();
   const [comments, setComments] = useState([]);
