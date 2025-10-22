@@ -1,60 +1,23 @@
-import { useEffect, useState } from "react";
-
-// Import styles of packages that you've installed.
-// All packages except `@mantine/hooks` require styles imports
-import "@mantine/core/styles.css";
-import { MantineProvider } from "@mantine/core";
-import { Button, Stack, Title, PasswordInput, TextInput } from "@mantine/core";
-import { AppShell, Burger } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
-
-import { NavbarMinimal } from "./components/NavbarMinimal/NavbarMinimal.jsx";
-import { HeaderSimple } from "./components/HeaderSimple/HeaderSimple.jsx";
-import { TableSort } from "./components/TableSort/TableSort.jsx";
-import LoginForm from "./components/LoginForm.jsx";
 import { CoursePage } from "./pages/coursePage.jsx";
 import HomePage from "./pages/HomePage.jsx";
-
+import LoginPage from "./pages/LoginPage.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthProvider";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
 
 export default function App() {
-  const [message, setMessage] = useState("");
-  const [opened, { toggle }] = useDisclosure();
-  const [courses, setCourses] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = async (values) => {
-    try {
-      const response = await fetch("/api/get_courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-      setCourses(data);
-      console.log(courses);
-
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetch("/api/hello")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error("Error fetching API:", err));
-  }, []);
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/courses/:courseCode" element={<CoursePage />} />
-        <Route path="/" element={<HomePage />} />
-      </Routes>
-    </Router>
+    <MantineProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/courses/:courseCode" element={<CoursePage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/auth" element={<LoginPage />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </MantineProvider>
   );
 }

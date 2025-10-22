@@ -52,6 +52,20 @@ export default function HomePage() {
 
   useEffect(() => {
     getDbCourses();
+    const expiry = parseInt(sessionStorage.getItem("expiry"), 10);
+
+    if (expiry && Date.now() < expiry) {
+      const username = sessionStorage.getItem("username");
+      const courses = JSON.parse(sessionStorage.getItem("courses") || "[]");
+      console.log("Welcome back:", username, courses);
+      setUserCourses(courses);
+      setUserName(username);
+      setIsLoggedIn(true);
+    } else {
+      // Expired or missing
+      sessionStorage.clear();
+      console.log("Session expired, please log in again.");
+    }
   }, []);
 
   const handleLogin = async (values) => {
@@ -63,6 +77,13 @@ export default function HomePage() {
       });
 
       const data = await response.json();
+      const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes from now
+
+      sessionStorage.setItem("username", values.username);
+      sessionStorage.setItem("courses", JSON.stringify(data));
+      sessionStorage.setItem("expiry", expiry.toString());
+      sessionStorage.setItem("", expiry.toString());
+
       setUserCourses(data);
       setIsLoggedIn(true);
       setUserName(values.username);
@@ -116,7 +137,14 @@ export default function HomePage() {
       */}
 
       <AppShell.Main>
-        <LoginForm onLogin={handleLogin} />
+        {isLoggedIn === false && <LoginForm onLogin={handleLogin} />}
+        {isLoggedIn && (
+          <div>
+            <h1>Hi {userName}!</h1>
+            <h3>Please contribute by rating your courses :D</h3>
+          </div>
+        )}
+
         <Tabs defaultValue="userCourses">
           <Tabs.List>
             <Tabs.Tab value="userCourses">My Courses</Tabs.Tab>

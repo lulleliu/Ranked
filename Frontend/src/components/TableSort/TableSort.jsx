@@ -14,6 +14,7 @@ import {
   Text,
   TextInput,
   UnstyledButton,
+  Rating,
 } from "@mantine/core";
 import classes from "./TableSort.module.css";
 
@@ -73,89 +74,6 @@ function sortData(data, payload) {
   );
 }
 
-const data = [
-  {
-    name: "Athena Weissnat",
-    company: "Little - Rippin",
-    email: "Elouise.Prohaska@yahoo.com",
-  },
-  {
-    name: "Deangelo Runolfsson",
-    company: "Greenfelder - Krajcik",
-    email: "Kadin_Trantow87@yahoo.com",
-  },
-  {
-    name: "Danny Carter",
-    company: "Kohler and Sons",
-    email: "Marina3@hotmail.com",
-  },
-  {
-    name: "Trace Tremblay PhD",
-    company: "Crona, Aufderhar and Senger",
-    email: "Antonina.Pouros@yahoo.com",
-  },
-  {
-    name: "Derek Dibbert",
-    company: "Gottlieb LLC",
-    email: "Abagail29@hotmail.com",
-  },
-  {
-    name: "Viola Bernhard",
-    company: "Funk, Rohan and Kreiger",
-    email: "Jamie23@hotmail.com",
-  },
-  {
-    name: "Austin Jacobi",
-    company: "Botsford - Corwin",
-    email: "Genesis42@yahoo.com",
-  },
-  {
-    name: "Hershel Mosciski",
-    company: "Okuneva, Farrell and Kilback",
-    email: "Idella.Stehr28@yahoo.com",
-  },
-  {
-    name: "Mylene Ebert",
-    company: "Kirlin and Sons",
-    email: "Hildegard17@hotmail.com",
-  },
-  {
-    name: "Lou Trantow",
-    company: "Parisian - Lemke",
-    email: "Hillard.Barrows1@hotmail.com",
-  },
-  {
-    name: "Dariana Weimann",
-    company: "Schowalter - Donnelly",
-    email: "Colleen80@gmail.com",
-  },
-  {
-    name: "Dr. Christy Herman",
-    company: "VonRueden - Labadie",
-    email: "Lilyan98@gmail.com",
-  },
-  {
-    name: "Katelin Schuster",
-    company: "Jacobson - Smitham",
-    email: "Erich_Brekke76@gmail.com",
-  },
-  {
-    name: "Melyna Macejkovic",
-    company: "Schuster LLC",
-    email: "Kylee4@yahoo.com",
-  },
-  {
-    name: "Pinkie Rice",
-    company: "Wolf, Trantow and Zulauf",
-    email: "Fiona.Kutch@hotmail.com",
-  },
-  {
-    name: "Brain Kreiger",
-    company: "Lueilwitz Group",
-    email: "Rico98@hotmail.com",
-  },
-];
-
 export function TableSort({ data = [], username }) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
@@ -198,7 +116,12 @@ export function TableSort({ data = [], username }) {
       >
         {row.code}
       </Table.Td>
-      <Table.Td>{row.name}</Table.Td>
+      <Table.Td
+        onClick={() => handleCourseCodeClick(row)}
+        style={{ cursor: "pointer" }}
+      >
+        {row.name}
+      </Table.Td>
       <Table.Td>{row.company}</Table.Td>
     </Table.Tr>
   ));

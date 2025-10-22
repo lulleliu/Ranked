@@ -86,21 +86,40 @@ export function CoursePage() {
   };
 
   const handleRating = async (values) => {
-    if (username !== "") {
+    if (!username) return alert("Please log in first");
+
+    const { data: existing } = await supabase
+      .from("ratings")
+      .select("*")
+      .eq("course_id", course.id)
+      .eq("user_id", username)
+      .single();
+
+    if (existing) {
+      // Update the existing rating
+      const { data, error } = await supabase
+        .from("ratings")
+        .update({ stars: values.rating })
+        .eq("id", existing.id)
+        .select();
+
+      if (error) console.error("Error updating rating:", error);
+      else console.log("Updated rating:", data);
+
+      await getRatings(); // Refresh ratings after update
+    } else {
+      // Insert new rating
       const { data, error } = await supabase
         .from("ratings")
         .insert([
           { course_id: course.id, user_id: username, stars: values.rating },
         ])
-        .select("id, course_id, user_id, stars, created_at");
+        .select();
 
       if (error) console.error("Error inserting new rating:", error);
-      else {
-        console.log("Added new Rating:", data);
-        getComments();
-      }
-    } else {
-      alert("Please log in first");
+      else console.log("Added new rating:", data);
+
+      await getRatings(); // Refresh ratings after insert
     }
   };
 

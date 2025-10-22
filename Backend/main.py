@@ -17,7 +17,7 @@ async def root():
 
 @app.post("/api/get_courses")
 async def get_courses(data: LoginData):
-    """
+    
     from course_gatherer import LadokSession
 
     ls = LadokSession(username=data.username, password=data.password)
@@ -66,6 +66,6 @@ async def get_courses(data: LoginData):
 
     pprint.pprint(courses_sorted)
     return courses_sorted
-    """
     
-    return mock_data
+    
+    # return mock_data

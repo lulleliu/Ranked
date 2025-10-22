@@ -7,8 +7,6 @@ import { MantineProvider } from "@mantine/core";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <MantineProvider>
-      <App />
-    </MantineProvider>
+    <App />
   </StrictMode>
 );
