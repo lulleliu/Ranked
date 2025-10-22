@@ -67,4 +67,5 @@ async def get_courses(data: LoginData):
     pprint.pprint(courses_sorted)
     return courses_sorted
     """
+    
     return mock_data

@@ -156,7 +156,7 @@ const data = [
   },
 ];
 
-export function TableSort({ data = [] }) {
+export function TableSort({ data = [], username }) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState(null);
@@ -185,7 +185,9 @@ export function TableSort({ data = [] }) {
   };
 
   const handleCourseCodeClick = (course) => {
-    navigate(`/courses/${encodeURIComponent(course.code)}`);
+    navigate(`/courses/${encodeURIComponent(course.code)}`, {
+      state: { username: username },
+    });
   };
 
   const rows = sortedData.map((row) => (
@@ -223,7 +225,7 @@ export function TableSort({ data = [] }) {
               reversed={reverseSortDirection}
               onSort={() => setSorting("code")}
             >
-              Coursecode
+              Course Code
             </Th>
             <Th
               sorted={sortBy === "name"}
