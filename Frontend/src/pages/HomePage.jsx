@@ -70,11 +70,14 @@ export default function HomePage() {
 
   const handleLogin = async (values) => {
     try {
-      const response = await fetch("/api/get_courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/get_courses`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        }
+      );
 
       const data = await response.json();
       const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes from now
