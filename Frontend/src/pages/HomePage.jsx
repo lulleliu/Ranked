@@ -11,6 +11,9 @@ import {
   PasswordInput,
   TextInput,
   Tabs,
+  Loader, // Add this
+  Center, // Add this
+  Text, // Add this
 } from "@mantine/core";
 import { AppShell, Burger } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -43,6 +46,7 @@ export default function HomePage() {
 
   const [tableView, setTableView] = useState("personal");
   const [userName, setUserName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const getDbCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
@@ -70,6 +74,7 @@ export default function HomePage() {
 
   const handleLogin = async (values) => {
     try {
+      setIsLoading(true);
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/get_courses`,
         {
@@ -120,6 +125,8 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error("Error fetching courses:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,6 +153,15 @@ export default function HomePage() {
             <h1>Hi {userName}!</h1>
             <h3>Please contribute by rating your courses :D</h3>
           </div>
+        )}
+
+        {isLoading && (
+          <Center style={{ height: "200px" }}>
+            <Stack align="center" gap="md">
+              <Loader size="lg" />
+              <Text>Loading your courses...</Text>
+            </Stack>
+          </Center>
         )}
 
         <Tabs defaultValue="userCourses">
