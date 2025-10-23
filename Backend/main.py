@@ -1,10 +1,25 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import pprint
 
 from courses_data import mock_data
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL],  # In production, replace with your Vercel domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class LoginData(BaseModel):
     username: str
@@ -21,7 +36,6 @@ async def get_courses(data: LoginData):
     from course_gatherer import LadokSession
 
     ls = LadokSession(username=data.username, password=data.password)
-    print("hello")
 
     courses_raw = ls.get('/studiedeltagande/internal/tillfallesdeltagande/kurstillfallesdeltagande/student/' + ls.get_uid())
     
@@ -64,7 +78,6 @@ async def get_courses(data: LoginData):
         
     courses_sorted = sorted(courses, key=lambda d: d['name'])
 
-    pprint.pprint(courses_sorted)
     return courses_sorted
     
     
