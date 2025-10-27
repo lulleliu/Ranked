@@ -19,10 +19,11 @@ export default function CoursePage() {
   const [comments, setComments] = useState([]);
   const [ratings, setRatings] = useState([]);
   const [ratingsLoaded, setRatingsLoaded] = useState(false);
+  const [userRating, setUserRating] = useState(0);
 
   // Access Username
-  const location = useLocation();
-  const username = location.state?.username;
+  // const location = useLocation();
+  const username = sessionStorage.getItem("username");
 
   useEffect(() => {
     getCourse();
@@ -32,10 +33,24 @@ export default function CoursePage() {
     if (course?.id) {
       getComments();
       getRatings();
+      getUserRating();
     }
     console.log("Comments: ", comments);
     console.log("Ratings: ", ratings);
   }, [course]);
+
+  const getUserRating = async () => {
+    const { data: existing } = await supabase
+      .from("ratings")
+      .select("*")
+      .eq("course_id", course.id)
+      .eq("user_id", username)
+      .single();
+
+    if (existing) {
+      setUserRating(existing.stars);
+    }
+  };
 
   const getCourse = async () => {
     const { data, error } = await supabase
@@ -67,6 +82,12 @@ export default function CoursePage() {
   };
 
   const handleComment = async (values) => {
+    const userCourses = JSON.parse(sessionStorage.getItem("userCourses")) || [];
+    const hasTakenCourse = userCourses.some((c) => c.code === course.code);
+
+    if (!hasTakenCourse) {
+      return alert("You can only comment on courses you have taken.");
+    }
     if (username !== "") {
       const { data, error } = await supabase
         .from("comments")
@@ -87,6 +108,14 @@ export default function CoursePage() {
 
   const handleRating = async (values) => {
     if (!username) return alert("Please log in first");
+
+    const userCourses = JSON.parse(sessionStorage.getItem("userCourses")) || [];
+    console.log("userCourses: ", userCourses);
+    const hasTakenCourse = userCourses.some((c) => c.code === course.code);
+
+    if (!hasTakenCourse) {
+      return alert("You can only rate courses you have taken.");
+    }
 
     const { data: existing } = await supabase
       .from("ratings")
@@ -159,6 +188,7 @@ export default function CoursePage() {
             size="xl"
           />
         )}
+        ({ratings.length})
       </h3>
       <p>
         Kurssida:{" "}
@@ -169,7 +199,7 @@ export default function CoursePage() {
       </p>
 
       <h3>Leave a rating</h3>
-      <RatingForm onRating={handleRating} />
+      <RatingForm onRating={handleRating} userRating={userRating} />
 
       <h3>Leave a comment</h3>
       <CommentForm onComment={handleComment} />

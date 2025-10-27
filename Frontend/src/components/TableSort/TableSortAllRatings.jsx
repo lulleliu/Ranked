@@ -74,18 +74,26 @@ function sortData(data, payload) {
   );
 }
 
-export function TableSort({ data = [], username }) {
+export function TableSortAllRatings({ data = [], username }) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
+  const [dbCourses, setDbCourses] = useState([]);
 
   // Update when data changes from parent
   useEffect(() => {
     setSortedData(data);
+    getDbCourses();
   }, [JSON.stringify(data)]);
 
   const navigate = useNavigate();
+
+  const getDbCourses = async () => {
+    const { data, error } = await supabase.from("courses").select("*");
+    if (error) console.error("Error inserting new courses:", error);
+    else setDbCourses(data);
+  };
 
   const setSorting = (field) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -162,7 +170,7 @@ export function TableSort({ data = [], username }) {
               reversed={reverseSortDirection}
               onSort={() => setSorting("company")}
             >
-              My Rating
+              Rating
             </Th>
           </Table.Tr>
         </Table.Thead>

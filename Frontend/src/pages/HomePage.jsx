@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
@@ -23,6 +23,7 @@ import { useForm } from "@mantine/form";
 import { NavbarMinimal } from "../components/NavbarMinimal/NavbarMinimal.jsx";
 import { HeaderSimple } from "../components/HeaderSimple/HeaderSimple.jsx";
 import { TableSort } from "../components/TableSort/TableSort.jsx";
+import { TableSortAllRatings } from "../components/TableSort/TableSortAllRatings.jsx";
 import LoginForm from "../components/LoginForm.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -47,10 +48,14 @@ export default function HomePage() {
   const [tableView, setTableView] = useState("personal");
   const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState(() => {
+    // Load from sessionStorage immediately on initialization
+    return sessionStorage.getItem("activeTab") || "userCourses";
+  });
 
   const getDbCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
-    if (error) console.error("Error inserting new courses:", error);
+    if (error) console.error("Error fetching new courses:", error);
     else setDbCourses(data);
   };
 
@@ -60,17 +65,28 @@ export default function HomePage() {
 
     if (expiry && Date.now() < expiry) {
       const username = sessionStorage.getItem("username");
-      const courses = JSON.parse(sessionStorage.getItem("courses") || "[]");
+      const courses = JSON.parse(sessionStorage.getItem("userCourses") || "[]");
       console.log("Welcome back:", username, courses);
       setUserCourses(courses);
       setUserName(username);
       setIsLoggedIn(true);
     } else {
       // Expired or missing
-      sessionStorage.clear();
+
+      sessionStorage.removeItem("username");
+      sessionStorage.removeItem("userCourses");
+      sessionStorage.removeItem("expiry");
       console.log("Session expired, please log in again.");
     }
+
+    console.log(activeTab);
+    console.log(userCourses);
   }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    sessionStorage.setItem("activeTab", tab);
+  };
 
   const handleLogin = async (values) => {
     try {
@@ -88,7 +104,7 @@ export default function HomePage() {
       const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes from now
 
       sessionStorage.setItem("username", values.username);
-      sessionStorage.setItem("courses", JSON.stringify(data));
+      sessionStorage.setItem("userCourses", JSON.stringify(data));
       sessionStorage.setItem("expiry", expiry.toString());
       sessionStorage.setItem("", expiry.toString());
 
@@ -164,7 +180,7 @@ export default function HomePage() {
           </Center>
         )}
 
-        <Tabs defaultValue="userCourses">
+        <Tabs value={activeTab} onChange={handleTabChange} keepMounted>
           <Tabs.List>
             <Tabs.Tab value="userCourses">My Courses</Tabs.Tab>
             <Tabs.Tab value="allCourses">All Courses</Tabs.Tab>
@@ -178,7 +194,7 @@ export default function HomePage() {
           </Tabs.Panel>
 
           <Tabs.Panel value="allCourses">
-            <TableSort data={dbCourses} username={userName} />
+            <TableSortAllRatings data={dbCourses} username={userName} />
           </Tabs.Panel>
         </Tabs>
       </AppShell.Main>
